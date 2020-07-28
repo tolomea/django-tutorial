@@ -4,9 +4,17 @@ from django.db import models
 from django.utils import timezone
 
 
-class Question(models.Model):
+class BaseModel(models.Model):
+    class Meta:
+        abstract = True
+
+    bob = models.Manager()
+    objects = models.Manager()
+
+
+class Question(BaseModel):
     question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField("date published")
 
     def __str__(self):
         return self.question_text
@@ -16,7 +24,7 @@ class Question(models.Model):
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
 
-class Choice(models.Model):
+class Choice(BaseModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)

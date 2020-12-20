@@ -1,21 +1,13 @@
 from django.contrib import admin
 
-from .models import Simulation, SimulationSource, Scenario
-
-
-class SimulationSourceInlineAdmin(admin.TabularInline):
-    model = SimulationSource
-
-
-class ScenarioChoiceInlineAdmin(admin.TabularInline):
-    model = Scenario.choices.through
+from .models import Simulation, Scenario
 
 
 @admin.register(Simulation)
 class SimulationAdmin(admin.ModelAdmin):
-    inlines = [SimulationSourceInlineAdmin]
+    pass
 
 
 @admin.register(Scenario)
 class ScenarioAdmin(admin.ModelAdmin):
-    inlines = [ScenarioChoiceInlineAdmin]
+    pass

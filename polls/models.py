@@ -1,25 +1,32 @@
-import datetime
-
+import auto_prefetch
 from django.db import models
-from django.utils import timezone
 
 
-class Question(models.Model):
-    question_text = models.CharField(max_length=200)
-    pub_date = models.DateTimeField('date published')
-
-    def __str__(self):
-        return self.question_text
-
-    def was_published_recently(self):
-        now = timezone.now()
-        return now - datetime.timedelta(days=1) <= self.pub_date <= now
+class Simulation(auto_prefetch.Model):
+    pass
 
 
-class Choice(models.Model):
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
-    votes = models.IntegerField(default=0)
+class SimulationSource(auto_prefetch.Model):
+    name = models.CharField(max_length=10)
+    simulation = auto_prefetch.ForeignKey(
+        Simulation, on_delete=models.CASCADE, related_name="simulation_sources"
+    )
 
-    def __str__(self):
-        return self.choice_text
+
+class Scenario(auto_prefetch.Model):
+    simulation = auto_prefetch.ForeignKey(
+        Simulation, on_delete=models.CASCADE, related_name="scenarios"
+    )
+
+    choices = models.ManyToManyField(
+        SimulationSource, through="ScenarioChoice", related_name="scenarios"
+    )
+
+
+class ScenarioChoice(auto_prefetch.Model):
+    scenario = auto_prefetch.ForeignKey(
+        Scenario, on_delete=models.CASCADE, related_name="scenario_choices"
+    )
+    simulation_source = auto_prefetch.ForeignKey(
+        SimulationSource, on_delete=models.CASCADE, related_name="scenario_choices"
+    )
